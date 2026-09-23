@@ -22,8 +22,21 @@ Adjust the host, port, user, and database arguments to match your settings.
 This command does not read `.env`; supply a password when prompted if required.
 The application does not create databases or tables. Connections open on first
 database use, so startup, `/health`, and `/docs` work before the database exists.
-Enabling the `vector` extension in this database is deferred until vector storage
-is added.
+The initial Alembic migration enables the installed pgvector extension before
+creating the tables. Migrations are not run automatically.
+
+## Migrations
+
+Alembic uses the same `POSTGRES_*` settings as the app. Run via Pipenv to load `.env`.
+
+```sh
+pipenv run alembic revision --autogenerate -m "describe model changes"
+pipenv run alembic upgrade head
+```
+
+Review generated revisions before applying them. The initial revision creates
+`documents`, `chunks`, and their indexes and constraints. Its downgrade removes
+those tables but leaves the potentially shared `vector` extension installed.
 
 ## Using sessions
 
@@ -36,3 +49,21 @@ Each concurrent task needs its own session.
 
 The engine checks pooled connections before reuse and is disposed on application
 shutdown. Session objects retain loaded attributes after commit.
+
+## Document and chunk models
+
+Import `Documents`, `Chunks`, and `Base` from `app.models` to register both tables.
+Both models inherit creation and modification timestamps from the existing base.
+UUIDs are generated when rows are inserted through SQLAlchemy.
+
+Documents store a title, source path or URL, and `ingestion_status`: `pending`
+(default), `processing`, `completed`, or `failed`. Titles need not be unique.
+Chunks store their document ID, zero-based position, text, optional source location
+(such as a page or heading), and a required embedding. Positions are unique within
+each document. Deleting a document also deletes its chunks.
+
+The embedding column uses an unspecified vector dimension until an embedding model
+is selected. Use the same model and dimension for all stored chunks and queries;
+fix the column dimension before adding a vector index. Save chunks after generating
+their embeddings. Relationships use `lazy="raise"`; explicitly load them with
+`selectinload` when needed to avoid implicit database IO in async code.
