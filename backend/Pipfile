@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = {extras = ["standard"], version = "*"}
-pydantic = "*"
-pydantic-settings = "*"
+fastapi = {extras = ["standard"], version = "0.141.*"}
+pydantic-settings = "2.15.*"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.*"}
-asyncpg = "*"
+asyncpg = "0.31.*"
+pymupdf = "1.28.*"
 
 [dev-packages]
 
