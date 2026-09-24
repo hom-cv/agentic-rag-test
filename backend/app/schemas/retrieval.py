@@ -17,6 +17,7 @@ class RetrievalQuery(BaseModel):
     def validate_nonzero_embedding(cls, embedding: list[float]) -> list[float]:
         if not any(embedding):
             raise ValueError("Cosine search requires a nonzero embedding")
+
         return embedding
 
 
