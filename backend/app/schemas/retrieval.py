@@ -1,24 +1,6 @@
-from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, Field, FiniteFloat, field_validator
-
-
-class RetrievalQuery(BaseModel):
-    """A text-embedding-3-small vector and the number of child matches to fetch."""
-
-    embedding: Annotated[
-        list[FiniteFloat], Field(min_length=1536, max_length=1536)
-    ]
-    limit: Annotated[int, Field(gt=0)] = 5
-
-    @field_validator("embedding")
-    @classmethod
-    def validate_nonzero_embedding(cls, embedding: list[float]) -> list[float]:
-        if not any(embedding):
-            raise ValueError("Cosine search requires a nonzero embedding")
-
-        return embedding
+from pydantic import BaseModel
 
 
 class RetrievalResult(BaseModel):
