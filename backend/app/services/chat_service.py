@@ -4,22 +4,26 @@ from typing import Annotated
 from fastapi import Depends
 
 from app.schemas.chat import ChatRequest, ChatResponse, ChatSource
+from app.services.embedding_service import AnnotatedEmbeddingService
 from app.services.generation_service import AnnotatedGenerationService
 from app.services.retrieval_service import AnnotatedRetrievalService
 
 
-class RAGService:
+class ChatService:
     def __init__(
         self,
+        embedder: AnnotatedEmbeddingService,
         retrieval: AnnotatedRetrievalService,
         generation: AnnotatedGenerationService,
     ):
+        self.embedder = embedder
         self.retrieval = retrieval
         self.generation = generation
 
-    async def chat(self, request: ChatRequest) -> ChatResponse:
+    async def generate_rag_response(self, request: ChatRequest) -> ChatResponse:
         """Retrieve passages, prepare parent context, and generate an answer."""
-        matches = await self.retrieval.retrieve(request)
+        embedding = await self.embedder.embed(request.question)
+        matches = await self.retrieval.retrieve(embedding, request.limit)
 
         if not matches:
             return ChatResponse(
@@ -56,4 +60,4 @@ class RAGService:
         return ChatResponse(answer=answer, sources=sources)
 
 
-AnnotatedRAGService = Annotated[RAGService, Depends(RAGService)]
+AnnotatedChatService = Annotated[ChatService, Depends(ChatService)]
