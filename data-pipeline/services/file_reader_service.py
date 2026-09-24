@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-FILES_DIR = Path("files")
+FILES_DIR = Path("input")
 SUPPORTED_EXTENSIONS = {".pdf", ".txt", ".md"}
 
 
@@ -11,13 +11,13 @@ class FileReaderService:
         self.files_dir = Path(files_dir).resolve()
 
     def list_files(self) -> list[Path]:
-        """Return supported files recursively, sorted by path."""
+        """Return supported input files, sorted by path."""
         if not self.files_dir.is_dir():
             raise NotADirectoryError(self.files_dir)
 
         files = []
 
-        for path in self.files_dir.rglob("*"):
+        for path in self.files_dir.glob("*"):
             if not path.is_file():
                 continue
 

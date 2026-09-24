@@ -10,11 +10,8 @@ def main() -> None:
     extractor = ExtractionService()
 
     for path in reader.list_files():
-        source = path.relative_to(reader.files_dir)
-        document = extractor.extract_file(path, source.as_posix())
-
-        output_path = Path("output") / source.with_suffix(source.suffix + ".json")
-
+        document = extractor.extract_file(path, path.name)
+        output_path = Path(f"{path.stem}_extract.json")
         output_path.write_text(
             json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8"
         )

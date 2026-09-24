@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pymupdf4llm = "1.28.*"
+langchain-text-splitters = "==1.1.*"
 
 [dev-packages]
 

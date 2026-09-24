@@ -3,7 +3,7 @@
 __pycache__/
 *.py[cod]
 .DS_Store
-files/*
-!files/.gitkeep
-/documents.json
-/output/
+input/*
+!input/.gitkeep
+/*_extract.json
+/*_transform.json
