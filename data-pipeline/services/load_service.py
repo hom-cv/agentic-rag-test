@@ -10,7 +10,13 @@ from sqlalchemy.dialects.postgresql import insert
 
 class LoadService:
     def load_document(self, document: TransformedDocument) -> UUID:
-        """Replace a source document's chunks in one transaction."""
+        """
+        Loads the document into the vector database.
+        If document is already in the database, updates the document.
+
+        On load, deletes all vectors related to document if the
+        document is already in the database.
+        """
 
         if document.embedding_model != "text-embedding-3-small" or document.embedding_dimensions != 1536:
             raise ValueError("Run transform to generate text-embedding-3-small embeddings first")
