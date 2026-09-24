@@ -11,6 +11,7 @@ asyncpg = "0.31.*"
 inflect = "7.5.*"
 pgvector = "0.4.*"
 alembic = "1.20.*"
+openai = "==2.*"
 
 [dev-packages]
 

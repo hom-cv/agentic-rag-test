@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     """Environment variables"""
     APP_NAME: str
     BASE_URL: str
+    OPENAI_API_KEY: str = ""
 
     POSTGRES_HOST: str
     POSTGRES_PORT: int
