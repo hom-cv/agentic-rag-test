@@ -27,6 +27,7 @@ class ChunkingService:
         page_ranges: list[tuple[int, int, int | None]] = []
 
         # combine all text into one large string
+        # page_ranges is start inclusive, end exclusive (excluding added separators).
         for page in document.pages:
             start = len(text)
             text += page.content
@@ -53,6 +54,7 @@ class ChunkingService:
                 if not child.page_content.strip():
                     continue
 
+                # converts the child's offset (parent relative) to document relative offset
                 child_start = parent_start + child.metadata["start_index"]
                 parent_chunk.children.append(ChildChunk(
                     parent_id=parent_chunk.id,
@@ -74,7 +76,8 @@ class ChunkingService:
     ) -> list[int]:
         """
         Compares a chunk's character range against page_ranges to
-        find which page it comes from
+        find which page it comes from and returns the page numbers
+        containing the chunk.
         """
         pages = []
 
