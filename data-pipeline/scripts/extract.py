@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 from services.extraction_service import ExtractionService
@@ -13,7 +12,7 @@ def main() -> None:
         document = extractor.extract_file(path, path.name)
         output_path = Path(f"{path.stem}_extract.json")
         output_path.write_text(
-            json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8"
+            document.model_dump_json(indent=2), encoding="utf-8"
         )
 
 

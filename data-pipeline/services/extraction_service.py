@@ -1,10 +1,11 @@
 from pathlib import Path
 
 import pymupdf4llm
+from schemas.extraction import ExtractedDocument, ExtractedPage
 
 
 class ExtractionService:
-    def extract_file(self, path: Path, source: str) -> dict:
+    def extract_file(self, path: Path, source: str) -> ExtractedDocument:
         if path.suffix.lower() == ".pdf":
             pdf_pages = pymupdf4llm.to_markdown(
                 str(path), page_chunks=True, use_ocr=False
@@ -14,14 +15,11 @@ class ExtractionService:
                 raise TypeError("Expected a list of PDF pages")
 
             pages = []
-
             for number, page in enumerate(pdf_pages, start=1):
-                pages.append({"page": number, "content": page["text"]})
+                pages.append(ExtractedPage(page=number, content=page["text"]))
         else:
-            pages = [{"page": None, "content": path.read_text(encoding="utf-8-sig")}]
+            pages = [ExtractedPage(
+                page=None, content=path.read_text(encoding="utf-8-sig")
+            )]
 
-        return {
-            "title": path.stem,
-            "source": source,
-            "pages": pages,
-        }
+        return ExtractedDocument(title=path.stem, source=source, pages=pages)
