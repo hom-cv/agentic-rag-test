@@ -37,6 +37,9 @@ class ChunkingService:
 
         # splits string into parent chunks
         for parent in self.parent_splitter.create_documents([text]):
+            if not parent.page_content.strip():
+                continue
+
             parent_start = parent.metadata["start_index"]
             parent_chunk = ParentChunk(
                 content=parent.page_content,
@@ -47,6 +50,9 @@ class ChunkingService:
 
             # splits each parent chunk into children chunks
             for child in self.child_splitter.create_documents([parent.page_content]):
+                if not child.page_content.strip():
+                    continue
+
                 child_start = parent_start + child.metadata["start_index"]
                 parent_chunk.children.append(ChildChunk(
                     parent_id=parent_chunk.id,
