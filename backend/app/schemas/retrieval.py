@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, Field, FiniteFloat, PositiveInt, field_validator
+from pydantic import BaseModel, Field, FiniteFloat, field_validator
 
 
 class RetrievalQuery(BaseModel):
@@ -10,7 +10,7 @@ class RetrievalQuery(BaseModel):
     embedding: Annotated[
         list[FiniteFloat], Field(min_length=1536, max_length=1536)
     ]
-    limit: PositiveInt = 5
+    limit: Annotated[int, Field(gt=0)] = 5
 
     @field_validator("embedding")
     @classmethod
