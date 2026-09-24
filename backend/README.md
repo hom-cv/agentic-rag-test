@@ -2,6 +2,9 @@
 
 FastAPI, PostgreSQL, and pgvector. Requires Python 3.14 and Pipenv.
 
+Document preprocessing lives in `../data-pipeline/`. Database models and
+migrations are maintained here.
+
 ## Setup
 
 ```sh
