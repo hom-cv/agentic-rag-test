@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pymupdf4llm = "1.28.*"
+langchain-text-splitters = "==1.1.*"
+pydantic = "==2.13.*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.14"
