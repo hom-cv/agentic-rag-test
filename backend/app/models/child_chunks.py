@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 
 from pgvector.sqlalchemy import VECTOR
-from sqlalchemy import ForeignKey, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, Index, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import parent_chunks as parent_models
@@ -16,6 +16,14 @@ class ChildChunks(Base):
     __tablename__ = "child_chunks"
     __table_args__ = (
         UniqueConstraint("parent_id", "position", name="uq_child_chunks_parent_position"),
+        # HNSW uses graphs for fast approximate nearest-neighbor search.
+        # postgresql_ops tells the index to compare embeddings using cosine.
+        Index(
+            "ix_child_chunks_embedding_hnsw",
+            "embedding",
+            postgresql_using="hnsw",
+            postgresql_ops={"embedding": "vector_cosine_ops"},
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)

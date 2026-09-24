@@ -69,7 +69,8 @@ class ChildChunks(Base):
         ForeignKeyConstraint(['parent_id'], ['parent_chunks.id'], ondelete='CASCADE', name='child_chunks_parent_id_fkey'),
         PrimaryKeyConstraint('id', name='child_chunks_pkey'),
         UniqueConstraint('parent_id', 'position', name='uq_child_chunks_parent_position'),
-        Index('ix_child_chunks_created_date', 'created_date')
+        Index('ix_child_chunks_created_date', 'created_date'),
+        Index('ix_child_chunks_embedding_hnsw', 'embedding')
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
