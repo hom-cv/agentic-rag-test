@@ -70,7 +70,8 @@ class ChildChunks(Base):
         PrimaryKeyConstraint('id', name='child_chunks_pkey'),
         UniqueConstraint('parent_id', 'position', name='uq_child_chunks_parent_position'),
         Index('ix_child_chunks_created_date', 'created_date'),
-        Index('ix_child_chunks_embedding_hnsw', 'embedding')
+        Index('ix_child_chunks_embedding_hnsw', 'embedding'),
+        Index('ix_child_chunks_text_fts')
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)

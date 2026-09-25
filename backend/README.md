@@ -13,7 +13,8 @@ cp .env_template .env
 ```
 
 Set your PostgreSQL credentials in `.env` and create the configured database.
-PostgreSQL must have pgvector installed.
+PostgreSQL must have pgvector installed. Keyword search uses built-in PostgreSQL
+full-text search with an English GIN index; no additional extension is needed.
 
 ```sh
 pipenv run alembic upgrade head
@@ -28,8 +29,11 @@ Set `OPENAI_API_KEY` in `.env` to use `POST /api/v1/retrieval`:
 {"question": "What is this project about?", "limit": 5}
 ```
 
-Returns matching child passages, parent context, source metadata, and cosine
-similarity scores. Documents must already be loaded by the pipeline.
+Returns matching child passages, parent context, source metadata, and RRF scores.
+Retrieval combines cosine vector search and full-text keyword search (`ts_rank_cd`), fetching at least
+20 candidates per search (or four times `limit`). Each ranking contributes
+`1 / (60 + rank)`; higher combined scores rank first. Documents must already be
+loaded by the pipeline. Scores are no longer cosine similarity values.
 
 Send the same request to `POST /api/v1/chat` for a GPT-5 nano answer using
 deduplicated parent passages. Returns `answer` and `sources`, with labels such as

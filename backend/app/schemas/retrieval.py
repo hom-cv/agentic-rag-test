@@ -13,4 +13,5 @@ class RetrievalResult(BaseModel):
     parent_text: str
     child_source_location: str | None
     parent_source_location: str | None
+    # reciprocal rank fusion score (rrf)
     score: float

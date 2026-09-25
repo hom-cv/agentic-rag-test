@@ -19,7 +19,7 @@ async def retrieve(
     try:
         embedding = await embedder.embed(request.question)
 
-        return await service.retrieve(embedding, request.limit)
+        return await service.retrieve(request.question, embedding, request.limit)
     except APIError as exc:
         raise HTTPException(
             status_code=502, detail="Could not generate the question embedding"

@@ -23,7 +23,7 @@ class ChatService:
     async def generate_rag_response(self, request: ChatRequest) -> ChatResponse:
         """Retrieve passages, prepare parent context, and generate an answer."""
         embedding = await self.embedder.embed(request.question)
-        matches = await self.retrieval.retrieve(embedding, request.limit)
+        matches = await self.retrieval.retrieve(request.question, embedding, request.limit)
 
         if not matches:
             return ChatResponse(
