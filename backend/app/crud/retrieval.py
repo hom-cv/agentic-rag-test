@@ -24,6 +24,11 @@ class RetrievalCRUD:
         )
 
     async def vector_search(self, embedding: list[float], limit: int) -> list[UUID]:
+        # set HNSW search depth for this transaction to cover the candidate limit.
+        await self.session.execute(
+            select(func.set_config("hnsw.ef_search", str(max(40, limit)), True))
+        )
+
         statement = self._candidates().order_by(
             ChildChunks.embedding.cosine_distance(embedding)
         ).limit(limit)
