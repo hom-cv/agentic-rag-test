@@ -3,6 +3,15 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class ParentPassage(BaseModel):
+    document_id: UUID
+    parent_id: UUID
+    title: str
+    source: str
+    source_location: str | None
+    content: str
+
+
 class RetrievalResult(BaseModel):
     document_id: UUID
     title: str

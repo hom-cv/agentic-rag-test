@@ -35,10 +35,16 @@ Retrieval combines cosine vector search and full-text keyword search (`ts_rank_c
 `1 / (60 + rank)`; higher combined scores rank first. Documents must already be
 loaded by the pipeline. Scores are no longer cosine similarity values.
 
-Send the same request to `POST /api/v1/chat` for a GPT-5 nano answer using
-deduplicated parent passages. Returns `answer` and `sources`, with labels such as
-`S1` corresponding to `[S1]` citations. Sources list all supplied context passages.
-Each request is independent; chat history is not stored. `limit` counts child matches.
+Send the same request to `POST /api/v1/chat` for an agentic GPT-5 nano answer.
+The model can search (returning full parent passages), read a parent passage, or answer using
+source labels such as `[S1]`. Search uses the existing hybrid retrieval and reranker.
+`limit` controls the first search; the model can change the query and limit later.
+At most three retrieval calls are allowed, followed by a final answer or admission
+of missing information. There is no separate verifier.
+
+Returns `answer` and `sources` (all supplied sources, not only cited ones).
+Each request is independent; history is not stored. Token-limited model responses
+get one retry with a larger budget; repeated failure returns HTTP 502.
 
 ## Migrations
 
