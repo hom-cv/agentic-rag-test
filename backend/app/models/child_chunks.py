@@ -6,6 +6,7 @@ import uuid
 
 from pgvector.sqlalchemy import VECTOR
 from sqlalchemy import ForeignKey, Index, Text, UniqueConstraint
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import parent_chunks as parent_models
@@ -23,6 +24,12 @@ class ChildChunks(Base):
             "embedding",
             postgresql_using="hnsw",
             postgresql_ops={"embedding": "vector_cosine_ops"},
+        ),
+        # indexing on child chunk texts for faster keyword search
+        Index(
+            "ix_child_chunks_text_fts",
+            sql_text("to_tsvector('english'::regconfig, text)"),
+            postgresql_using="gin",
         ),
     )
 
