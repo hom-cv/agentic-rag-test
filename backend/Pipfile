@@ -12,6 +12,7 @@ inflect = "7.5.*"
 pgvector = "0.4.*"
 alembic = "1.20.*"
 openai = "==2.*"
+sentence-transformers = "6.1.*"
 
 [dev-packages]
 
