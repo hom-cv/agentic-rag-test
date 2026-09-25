@@ -17,7 +17,7 @@ class RetrievalService:
         """
         Fetch children ranked by cosine similarity and by keyword search,
         then using their respective ranks from each retrieval method,
-        calculates the rrf to rank the documents.
+        calculates the rrf to rank the child chunks.
         """
         candidate_limit = max(20, limit * 4)
         vector_ids = await self.crud.vector_search(embedding, candidate_limit)
