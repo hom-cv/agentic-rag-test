@@ -60,6 +60,25 @@ class RetrievalCRUD:
 
         return list(result)
 
+    async def get_parent_chunk(self, parent_id: UUID) -> RowMapping | None:
+        statement = (
+            select(
+                Documents.id.label("document_id"), Documents.title, Documents.source,
+                ParentChunks.id.label("parent_id"),
+                ParentChunks.text.label("content"),
+                ParentChunks.source_location,
+            )
+            .select_from(ParentChunks)
+            .join(Documents, ParentChunks.document_id == Documents.id)
+            .where(
+                ParentChunks.id == parent_id,
+                Documents.ingestion_status == "completed",
+                Documents.embedding_model == "text-embedding-3-small",
+            )
+        )
+        result = await self.session.execute(statement)
+        return result.mappings().one_or_none()
+
     async def get_chunks(self, child_ids: list[UUID]) -> list[RowMapping]:
         statement = (
             select(

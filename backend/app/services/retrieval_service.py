@@ -1,15 +1,20 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends
 
 from app.crud.retrieval import AnnotatedRetrievalCRUD
-from app.schemas.retrieval import RetrievalResult
+from app.schemas.retrieval import ParentPassage, RetrievalResult
 from app.utils.rrf import reciprocal_rank_fusion
 
 
 class RetrievalService:
     def __init__(self, crud: AnnotatedRetrievalCRUD):
         self.crud = crud
+
+    async def get_parent_chunk(self, parent_id: UUID) -> ParentPassage | None:
+        row = await self.crud.get_parent_chunk(parent_id)
+        return ParentPassage.model_validate(row) if row is not None else None
 
     async def retrieve(
         self, question: str, embedding: list[float], limit: int
