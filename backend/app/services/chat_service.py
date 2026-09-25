@@ -6,6 +6,7 @@ from fastapi import Depends
 from app.schemas.chat import ChatRequest, ChatResponse, ChatSource
 from app.services.embedding_service import AnnotatedEmbeddingService
 from app.services.generation_service import AnnotatedGenerationService
+from app.services.reranking_service import AnnotatedRerankingService
 from app.services.retrieval_service import AnnotatedRetrievalService
 
 
@@ -15,15 +16,21 @@ class ChatService:
         embedder: AnnotatedEmbeddingService,
         retrieval: AnnotatedRetrievalService,
         generation: AnnotatedGenerationService,
+        reranker: AnnotatedRerankingService,
     ):
         self.embedder = embedder
         self.retrieval = retrieval
         self.generation = generation
+        self.reranker = reranker
 
     async def generate_rag_response(self, request: ChatRequest) -> ChatResponse:
-        """Retrieve passages, prepare parent context, and generate an answer."""
+        """Retrieve and rerank passages, then generate from parent context."""
         embedding = await self.embedder.embed(request.question)
-        matches = await self.retrieval.retrieve(request.question, embedding, request.limit)
+        candidate_limit = max(20, request.limit * 4)
+        candidates = await self.retrieval.retrieve(
+            request.question, embedding, candidate_limit
+        )
+        matches = await self.reranker.rerank(request.question, candidates)
 
         if not matches:
             return ChatResponse(
@@ -35,7 +42,7 @@ class ChatService:
         context = []
         seen_parents = set()
 
-        for match in matches:
+        for match in matches[:request.limit]:
             if match.parent_id in seen_parents:
                 continue
 
